@@ -287,7 +287,8 @@
     font-size: 11px;
     color: var(--gray);
   }
-  .field input[type=number]{
+  .field input[type=number],
+  .field select{
     width: 100%;
     padding: 10px 12px;
     font-family: 'DM Sans', sans-serif;
@@ -299,10 +300,21 @@
     color: var(--navy);
     transition: border-color 0.2s, box-shadow 0.2s;
   }
-  .field input[type=number]:focus{
+  .field input[type=number]:focus,
+  .field select:focus{
     outline: none;
     border-color: var(--steel);
     box-shadow: 0 0 0 4px rgba(111,130,158,0.12);
+  }
+  .field select{
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236f829e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 1.1em;
+    padding-right: 2.6rem;
   }
   .field input[type=range]{
     width: 100%;
