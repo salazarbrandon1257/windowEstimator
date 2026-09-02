@@ -460,11 +460,105 @@
     font-size: 11px;
     color: var(--gray);
   }
+
+  .sheet[hidden]{ display: none; }
+
+  #authGate{
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+  #authGate[hidden]{ display: none; }
+  .auth-card{
+    background: var(--white);
+    border-radius: 12px;
+    padding: 3rem 2.75rem;
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(16,33,61,0.14), 0 2px 8px rgba(16,33,61,0.06);
+  }
+  .auth-card .brand-logo{ height: 44px; margin: 0 auto 20px; }
+  .auth-card h2{
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--navy);
+    margin: 0 0 8px;
+  }
+  .auth-card p{
+    font-size: 13px;
+    color: var(--gray);
+    line-height: 1.55;
+    margin: 0 0 24px;
+  }
+  .auth-btn{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+    border-radius: 2px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .auth-btn:hover{ background: var(--navy-mid); }
+  .auth-btn:disabled{ opacity: 0.6; cursor: default; }
+  .auth-error{
+    margin-top: 16px;
+    font-size: 12.5px;
+    color: var(--bad);
+    line-height: 1.5;
+    display: none;
+  }
+  .auth-error.show{ display: block; }
+
+  #signOutBtn{
+    position: fixed;
+    top: 16px; right: 16px;
+    z-index: 50;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background: rgba(255,255,255,0.92);
+    color: var(--navy);
+    border: 1px solid rgba(111,130,158,0.35);
+    border-radius: 20px;
+    padding: 7px 14px;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(16,33,61,0.12);
+  }
+  #signOutBtn[hidden]{ display: none; }
+  #signOutBtn:hover{ border-color: var(--steel); color: var(--steel); }
 </style>
 </head>
 <body>
 
-<div class="sheet">
+<div id="authGate">
+  <div class="auth-card">
+    <h2>Salazar &amp; Sons</h2>
+    <p>Sign in to open the job estimator, price lookup, and order entry worksheet.</p>
+    <button class="auth-btn" id="signInBtn">Sign in with Google</button>
+    <p class="auth-error" id="authError"></p>
+  </div>
+</div>
+
+<button id="signOutBtn" hidden>Sign out</button>
+
+<div class="sheet" id="appSheet" hidden>
   <div class="perf"></div>
 
   <div class="tab-bar">
@@ -645,7 +739,7 @@
   </div>
 
   <footer>
-    Defaults are pre-loaded from your own recent jobs (Ash Creek: 6 windows at ~$192 avg cost; Voltamp's $170 delivery fee). Adjust any field &mdash; everything recalculates live. This is a planning tool, not an invoice.
+    Load a past job above to pre-fill these fields from your real numbers, or adjust any field directly &mdash; everything recalculates live. This is a planning tool, not an invoice.
     <div class="footer-copy">&copy; 2026 Salazar &amp; Sons Window Co. All rights reserved.</div>
   </footer>
   </div>
@@ -758,17 +852,9 @@
 
       <div class="compare">
         <div class="compare-title">KNOWN PRICE POINTS (from your real quotes)</div>
-        <div class="compare-row"><span class="lbl">200 Series &mdash; Single Hung, 34.5&quot; &times; 59.5&quot;, white</span><span class="val">$192.76</span></div>
-        <div class="compare-row"><span class="lbl">200 Series &mdash; Single Hung, 34.5&quot; &times; 71.5&quot;, white</span><span class="val">$219.91</span></div>
-        <div class="compare-row"><span class="lbl">200 Series &mdash; Single Hung, 45.5&quot; &times; 71.5&quot;, white</span><span class="val">$273.46</span></div>
-        <div class="compare-row"><span class="lbl">200 Series &mdash; Custom Opening (arched), 70.5&quot; &times; 95.5&quot;, white</span><span class="val">$732.52</span></div>
-        <div class="compare-row"><span class="lbl">L250 Series &mdash; Single Hung, 31.5&quot; &times; 35.5&quot;, black</span><span class="val">$287.42</span></div>
-        <div class="compare-row"><span class="lbl">L250 Series &mdash; Slider (XO), 71.5&quot; &times; 35.5&quot;, black</span><span class="val">$446.01</span></div>
-        <div class="compare-row"><span class="lbl">L250 Series &mdash; Cont Jamb Arch, 23.5&quot; &times; 71.5&quot;, black</span><span class="val">$434.56</span></div>
-        <div class="compare-row"><span class="lbl">Pella 250 Series &mdash; Single Hung, ~42.6&quot;&ndash;42.6&quot; &times; 53&ndash;53.4&quot;, white*</span><span class="val">$588&ndash;592*</span></div>
-        <div class="compare-row"><span class="lbl">Pella 250 Series &mdash; Single Hung, ~30.3&quot; &times; 33.6&quot;, white*</span><span class="val">$265&ndash;267*</span></div>
+        <div id="lkKnownPoints"></div>
       </div>
-      <p class="preset-note">*Pella's quote (order 362 / #21244165) only gave one $7,012.09 total for 13 windows &mdash; no per-unit price. These are derived by fitting a $/sqft rate to that total, not itemized by Pella.</p>
+      <p class="preset-note" id="lkPellaNote"></p>
     </div>
   </div>
 
@@ -797,7 +883,7 @@
       <button class="preset-btn" data-korder="pella362">Pella #21244165 (13 windows)</button>
       <button class="preset-btn" data-korder="blank">Blank / Custom</button>
     </div>
-    <p class="preset-note" id="kPresetNote">Order 630330, 7/22/2026 &mdash; Bluesky Building Supplies LLC, PO: Brandan Lara (zubair). Real quoted prices per line item, 8.25% sales tax &mdash; totals to $2,220.46 exactly.</p>
+    <p class="preset-note" id="kPresetNote"></p>
   </header>
 
   <div class="k-body">
@@ -876,50 +962,23 @@ function money(n){
   return (neg ? '\u2212$' : '$') + v;
 }
 
-const JOBS = {
-  ashcreek: {
-    label: '9745 Ash Creek (1st job, Jun 2026)',
-    windowCount: 6,
-    windowCost: 191.78,
-    multiplier: 2,
-    laborPerWindow: 175,
-    suppliesCost: 967.67,
-    suppliesMarkup: 25,
-    deliveryFee: 0,
-    processing: 0,
-    actualRevenue: 2912.50,
-    actualCost: 3245.02,
-    note: '6 windows itemized directly from this job\u2019s Discount Construction invoice.'
-  },
-  countryln: {
-    label: '606 Country Ln (2nd job, Jul\u2013Aug 2026)',
-    windowCount: 1,
-    windowCost: 1734.72,
-    multiplier: 2,
-    laborPerWindow: 710,
-    suppliesCost: 221.53,
-    suppliesMarkup: 25,
-    deliveryFee: 0,
-    processing: 0,
-    actualRevenue: 2200.00,
-    actualCost: 2726.50,
-    note: 'Window count wasn\u2019t itemized for this job \u2014 entered as one lump-sum line ($1,734.72 total). Labor is likewise entered as a single line since no per-window split exists.'
-  },
-  voltamp: {
-    label: '809 Voltamp (3rd job, Jul\u2013Aug 2026)',
-    windowCount: 7,
-    windowCost: 317.21,
-    multiplier: 2,
-    laborPerWindow: 158.57,
-    suppliesCost: 630.95,
-    suppliesMarkup: 25,
-    deliveryFee: 170,
-    processing: 0,
-    actualRevenue: 4237.40,
-    actualCost: 4256.67,
-    note: '7 windows per the Blue Sky order acknowledgement: 1 custom arched combo opening (2 quarter-circle sashes + mull, 70.5\u2033\u00d795.5\u2033), 3 single hung 211-60, 2 single hung 211-50, 1 single hung 310-60. $2,220.46 total \u00f7 7 = $317.21/window. Includes the real $170 delivery fee.'
-  }
-};
+window.initApp = function initApp(data){
+if(window.__appInited) return;
+window.__appInited = true;
+
+const JOBS = data.jobs;
+const KNOWN_ORDERS = data.korders;
+const SERIES = {};
+Object.keys(data.series).forEach(seriesKey=>{
+  const s = data.series[seriesKey];
+  const types = {};
+  Object.keys(s.types).forEach(typeKey=>{
+    const t = s.types[typeKey];
+    types[typeKey] = { label: t.label, known: t.known, estimate: (w,h) => t.estA + t.estB * ((w*h)/144) };
+  });
+  SERIES[seriesKey] = { label: s.label, supplier: s.supplier, baseColor: s.baseColor, verified: s.verified, types };
+});
+const PELLA_ORDER_TOTAL = data.pellaOrderTotal;
 
 let currentPreset = null;
 
@@ -1064,50 +1123,6 @@ let kRows = [];
 let kRowId = 0;
 let kActiveOrder = null;
 
-const KNOWN_ORDERS = {
-  voltamp: {
-    total: 2220.46,
-    label: '809 Voltamp',
-    presetNote: 'Order 630330, 7/22/2026 \u2014 Bluesky Building Supplies LLC, PO: Brandan Lara (zubair). Real quoted prices per line item, 8.25% sales tax \u2014 totals to $2,220.46 exactly.',
-    rows: [
-      { item: '1', desc: '200 Custom Opening (arched combo \u2014 2 quarter-circle sashes + vertical mull)', qty: 1, size: '70.5"W x 95.5"H', price: 732.52 },
-      { item: '2', desc: '200 Single Hung', qty: 3, size: '34.5"W x 71.5"H', price: 219.91 },
-      { item: '3', desc: '200 Single Hung', qty: 2, size: '34.5"W x 59.5"H', price: 192.76 },
-      { item: '4', desc: '200 Single Hung', qty: 1, size: '45.5"W x 71.5"H', price: 273.46 },
-    ],
-  },
-  order628727: {
-    total: 1734.76,
-    label: 'Order 628727',
-    presetNote: 'Order 628727, 7/10/2026 \u2014 Bluesky Building Supplies LLC, PO: Brandon Salazar-Zubiar. L250 Series, black. Real quoted prices per line item, 8.25% sales tax \u2014 totals to $1,734.76 exactly.',
-    rows: [
-      { item: '1', desc: 'L250 Series Single Hung, black', qty: 1, size: '31.5"W x 35.5"H', price: 287.42 },
-      { item: '2', desc: 'L250 Series Slider (XO), black', qty: 1, size: '71.5"W x 35.5"H', price: 446.01 },
-      { item: '3', desc: 'L250 SH Cont Jamb Arch, black', qty: 2, size: '23.5"W x 71.5"H', price: 434.56 },
-    ],
-  },
-  pella362: {
-    total: 7590.59,
-    label: 'Pella Order 362 / Quote 21244165',
-    presetNote: 'Pella Windows and Doors of Dallas \u2014 Order 362 / Quote 21244165, 8/27/2026. Pella 250 Series Single Hung, white, 13 windows. Pella\u2019s quote only gave one $7,012.09 total \u2014 no per-unit price \u2014 so these unit prices are derived by fitting a $/sqft rate to that total (see the Price Lookup tab for the same rate). Sales tax 8.25% \u2014 totals to $7,590.59 exactly.',
-    rows: [
-      { item: '1',  desc: 'Pella 250 Series Single Hung, white', qty: 1, size: '42.625"W x 53"H',     price: 587.65 },
-      { item: '2',  desc: 'Pella 250 Series Single Hung, white', qty: 1, size: '42.625"W x 53"H',     price: 587.65 },
-      { item: '3',  desc: 'Pella 250 Series Single Hung, white', qty: 1, size: '42.625"W x 53.125"H', price: 589.03 },
-      { item: '4',  desc: 'Pella 250 Series Single Hung, white', qty: 1, size: '42.625"W x 53.25"H',  price: 590.42 },
-      { item: '5',  desc: 'Pella 250 Series Single Hung, white', qty: 1, size: '30.25"W x 33.625"H',  price: 264.58 },
-      { item: '6',  desc: 'Pella 250 Series Single Hung, white', qty: 1, size: '42.625"W x 53.125"H', price: 589.03 },
-      { item: '7',  desc: 'Pella 250 Series Single Hung, white', qty: 1, size: '42.625"W x 53.125"H', price: 589.03 },
-      { item: '8',  desc: 'Pella 250 Series Single Hung, white', qty: 1, size: '42.625"W x 53.125"H', price: 589.03 },
-      { item: '9',  desc: 'Pella 250 Series Single Hung, white', qty: 1, size: '42.625"W x 53.125"H', price: 589.03 },
-      { item: '10', desc: 'Pella 250 Series Single Hung, white', qty: 1, size: '42.625"W x 53.125"H', price: 589.03 },
-      { item: '11', desc: 'Pella 250 Series Single Hung, white', qty: 1, size: '30.5"W x 33.625"H',   price: 266.77 },
-      { item: '12', desc: 'Pella 250 Series Single Hung, white', qty: 1, size: '42.625"W x 53.125"H', price: 589.03 },
-      { item: '13', desc: 'Pella 250 Series Single Hung, white', qty: 1, size: '42.625"W x 53.375"H', price: 591.81 },
-    ],
-  },
-};
-
 function kNewRow(data){
   kRowId += 1;
   return Object.assign({ id: kRowId, item: '', desc: '', qty: 1, size: '', price: 0 }, data || {});
@@ -1251,89 +1266,13 @@ $('today2').textContent = new Date().toLocaleDateString('en-US', {month:'short',
 document.querySelector('[data-korder="voltamp"]').classList.add('active');
 kActiveOrder = 'voltamp';
 kRows = KNOWN_ORDERS.voltamp.rows.map(r => kNewRow(r));
+$('kPresetNote').textContent = KNOWN_ORDERS.voltamp.presetNote;
 kRender();
 
 // ===========================================================================
 // PRICE LOOKUP
 // ===========================================================================
 const EPS = 0.01;
-
-const SERIES = {
-  '200': {
-    label: '200 Series (Krestmark / Westlake)',
-    baseColor: 'white',
-    verified: true,
-    types: {
-      single_hung: {
-        label: 'Single Hung',
-        known: [
-          { w: 34.5, h: 59.5, price: 192.76 },
-          { w: 34.5, h: 71.5, price: 219.91 },
-          { w: 45.5, h: 71.5, price: 273.46 },
-        ],
-        estimate: (w,h) => 54.25 + 9.70 * ((w*h)/144), // linear fit
-      },
-      custom_opening: {
-        label: 'Custom / Arched Opening',
-        known: [
-          { w: 70.5, h: 95.5, price: 732.52 },
-        ],
-        estimate: (w,h) => 15.67 * ((w*h)/144), // flat $/sqft, single data point
-      },
-    },
-  },
-  l250: {
-    label: 'L250 Series (Westlake)',
-    baseColor: 'black',
-    verified: true,
-    types: {
-      single_hung: {
-        label: 'Single Hung',
-        known: [
-          { w: 31.5, h: 35.5, price: 287.42 },
-        ],
-        estimate: (w,h) => 37.01 * ((w*h)/144), // flat $/sqft, single data point
-      },
-      slider: {
-        label: 'Slider (XO)',
-        known: [
-          { w: 71.5, h: 35.5, price: 446.01 },
-        ],
-        estimate: (w,h) => 25.30 * ((w*h)/144),
-      },
-      cont_jamb_arch: {
-        label: 'Cont Jamb Arch (half-round combo)',
-        known: [
-          { w: 23.5, h: 71.5, price: 434.56 },
-        ],
-        estimate: (w,h) => 37.24 * ((w*h)/144),
-      },
-    },
-  },
-  pella250: {
-    label: 'Pella 250 Series',
-    supplier: 'Pella Windows and Doors of Dallas',
-    baseColor: 'white',
-    verified: false,
-    types: {
-      single_hung: {
-        label: 'Single Hung',
-        // Pella's quote didn't itemize a per-unit price \u2014 only an order total for 13 windows.
-        // These per-size prices are derived by fitting a $/sqft rate to that total; they reproduce
-        // the real $7,012.09 subtotal exactly, but are NOT individually-quoted line prices.
-        known: [
-          { w: 42.625, h: 53,     price: 587.65 },
-          { w: 42.625, h: 53.125, price: 589.03 },
-          { w: 42.625, h: 53.25,  price: 590.42 },
-          { w: 42.625, h: 53.375, price: 591.80 },
-          { w: 30.25,  h: 33.625, price: 264.58 },
-          { w: 30.5,   h: 33.625, price: 266.77 },
-        ],
-        estimate: (w,h) => 37.4574 * ((w*h)/144), // fit to the $7,012.09 order total
-      },
-    },
-  },
-};
 
 function lkSeriesObj(){ return SERIES[$('lkSeries').value]; }
 function lkTypeObj(){ return lkSeriesObj().types[$('lkType').value]; }
@@ -1510,10 +1449,115 @@ $('lkAddBtn').addEventListener('click', ()=>{
   $('page-krestmark').classList.add('active');
 });
 
+function lkRenderKnownPoints(){
+  const container = $('lkKnownPoints');
+  container.innerHTML = '';
+  Object.keys(SERIES).forEach(seriesKey=>{
+    const s = SERIES[seriesKey];
+    Object.keys(s.types).forEach(typeKey=>{
+      const t = s.types[typeKey];
+      t.known.forEach(k=>{
+        const star = s.verified ? '' : '*';
+        const row = document.createElement('div');
+        row.className = 'compare-row';
+        row.innerHTML = `<span class="lbl">${s.label} — ${t.label}, ${k.w}" × ${k.h}", ${s.baseColor}${star}</span><span class="val">$${k.price.toFixed(2)}${star}</span>`;
+        container.appendChild(row);
+      });
+    });
+  });
+  $('lkPellaNote').textContent = `*Pella's quote only gave one $${PELLA_ORDER_TOTAL.toFixed(2)} total for 13 windows — no per-unit price. These are derived by fitting a $/sqft rate to that total, not itemized by Pella.`;
+}
+
 $('today3').textContent = new Date().toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
 lkPopulateTypes();
 lkPopulateSizes();
+lkRenderKnownPoints();
 lkRecalc();
+
+}; // end initApp
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+  import {
+    getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+  import {
+    getFirestore, doc, getDoc
+  } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAUB1TnJ4m3pFj1-atw2xulvfL72LEvccQ",
+    authDomain: "salazar-sons-estimator-ed1f1.firebaseapp.com",
+    projectId: "salazar-sons-estimator-ed1f1",
+    storageBucket: "salazar-sons-estimator-ed1f1.firebasestorage.app",
+    messagingSenderId: "720521146064",
+    appId: "1:720521146064:web:ec41873fda92b9c8e9f8d5"
+  };
+  const ALLOWED_EMAIL = "salazarbrandon1257@gmail.com";
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const provider = new GoogleAuthProvider();
+
+  const authGate = document.getElementById('authGate');
+  const appSheet = document.getElementById('appSheet');
+  const signInBtn = document.getElementById('signInBtn');
+  const signOutBtn = document.getElementById('signOutBtn');
+  const authError = document.getElementById('authError');
+
+  function showError(msg){
+    authError.textContent = msg;
+    authError.classList.add('show');
+  }
+  function clearError(){
+    authError.textContent = '';
+    authError.classList.remove('show');
+  }
+
+  signInBtn.addEventListener('click', () => {
+    clearError();
+    signInBtn.disabled = true;
+    signInBtn.textContent = 'Signing in…';
+    signInWithPopup(auth, provider).catch(err => {
+      showError('Sign-in failed: ' + err.message);
+    }).finally(() => {
+      signInBtn.disabled = false;
+      signInBtn.textContent = 'Sign in with Google';
+    });
+  });
+
+  signOutBtn.addEventListener('click', () => {
+    signOut(auth);
+  });
+
+  onAuthStateChanged(auth, async (user) => {
+    if(user && user.email === ALLOWED_EMAIL && user.emailVerified){
+      try{
+        const snap = await getDoc(doc(db, 'protected', 'appData'));
+        if(!snap.exists()){
+          showError('Signed in, but no data was found. Check that protected/appData exists in Firestore.');
+          return;
+        }
+        authGate.hidden = true;
+        appSheet.hidden = false;
+        signOutBtn.hidden = false;
+        window.initApp(snap.data());
+      } catch(err){
+        showError('Could not load data: ' + err.message);
+      }
+    } else if(user){
+      showError('This Google account isn’t authorized for this tool.');
+      appSheet.hidden = true;
+      signOutBtn.hidden = true;
+      await signOut(auth);
+    } else {
+      appSheet.hidden = true;
+      signOutBtn.hidden = true;
+      authGate.hidden = false;
+    }
+  });
 </script>
 
 </body>
