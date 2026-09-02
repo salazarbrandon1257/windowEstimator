@@ -709,6 +709,10 @@
         <span>Built-in margin</span>
         <span class="val good" id="marginPct">32.0%</span>
       </div>
+      <div class="margin-row">
+        <span>Quote needed for a 20% margin</span>
+        <span class="val" id="target20Quote">$3,153</span>
+      </div>
 
       <div class="compare">
         <div class="compare-title">VS. 2x-WINDOWS-ONLY PRICING (materials, no separate labor/supplies line)</div>
@@ -1083,6 +1087,9 @@ function recalc(){
   const marginEl = $('marginPct');
   marginEl.textContent = (margin*100).toFixed(1) + '%';
   marginEl.className = 'val ' + (margin >= 0 ? 'good' : 'bad');
+
+  const target20Quote = hardCost / 0.8;
+  $('target20Quote').textContent = money(target20Quote);
 
   $('windowsOnlyQuote').textContent = money(windowsOnlyQuote);
   const shortfallEl = $('shortfall');
